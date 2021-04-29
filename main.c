@@ -285,7 +285,7 @@ return sts;
 #define  RF_OWN_ADDR  0x11  //TX address
 #include <avr/io.h>
 #include <util/delay.h>
-#include "nRF24L01P.h"
+
 
 
 int main(void){
