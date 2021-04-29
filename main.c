@@ -19,7 +19,7 @@ while(1){
 	       uint8_t buf[32]="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
            RF_TX(buf, len, 0x12, RF_ACK_REQ, 10);  //sending to 0x12, ACK required, 10 retries
 		   //RF_TX(buf, len, 0x12, RF_NO_ACK_REQ, 10);  //sending to 0x12, ACK not required, 10 retries
-           _delay_ms(100);
+           _delay_ms(500);
 		   len++;
 		   if(len>26){len=1;}
 		   
@@ -36,7 +36,7 @@ while(1){
 #include "nRF24L01P.h"
 
 
-#define  BAUD              19200         
+#define  BAUD              19200
 #define  UBRR_VAL          F_CPU/16/BAUD-1
 #define  UART_START()      UBRR0H=0;UBRR0L=UBRR_VAL;UCSR0B=0x18;UCSR0C=6;
 
