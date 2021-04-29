@@ -76,6 +76,8 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 
 #define  RF_GENERAL_CALL   0x00   /* Do not change */
 #define  RF_ACK_WAIT_MS    10     /* Do not change */
+#define  RF_ACK_MULTI_FACT 7      /* Do not change */
+#define  RF_REG_CHECK_US   100    /* Do not change */
 #define  RF_REG_READ       0x01   /* Do not change */
 #define  RF_REG_WRITE      0x00   /* Do not change */
 #define  RF_MODE_PWR_DOWN  0x02   /* Do not change */
@@ -90,6 +92,9 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 #define  OWN_ADDR_BYTE_POS 27     /* Do not change */
 #define  ACK_REQ_BYTE_POS  26     /* Do not change */
 
+
+
+#define  RF_ACK_TMOUT_RX   RF_ACK_WAIT_MS*RF_ACK_MULTI_FACT
 #define  RF_CSN_LOW()      RF_CSN_PORT&=~(1<<RF_CSN)
 #define  RF_CSN_HIGH()     RF_CSN_PORT|=(1<<RF_CSN)
 #define  RF_CE_LOW()       RF_CE_PORT&=~(1<<RF_CE)
@@ -196,7 +201,7 @@ temp[CRC_LSBYTE_POS]=crc;
 RF_RW_REG(0xA0,RF_REG_WRITE,temp,32);
 RF_CE_HIGH();
 temp[0]=0;
-while(!(temp[0]&(1<<4))){RF_RW_REG(0x17,RF_REG_READ,temp,1);_delay_us(100);}
+while(!(temp[0]&(1<<4))){RF_RW_REG(0x17,RF_REG_READ,temp,1);_delay_us(RF_REG_CHECK_US);}
 RF_CE_LOW();
 return crc;
 }
@@ -220,22 +225,23 @@ if(!(temp[0] & 0x01))
 	   calc_crc|=buf[CRC_LSBYTE_POS];
        if(crc==calc_crc){*len=(buf[LEN_BYTE_POS] & 0x1F);*ack=buf[ACK_REQ_BYTE_POS];sts=1;break;}
     }
-  _delay_us(85);
+  _delay_us(RF_REG_CHECK_US);
   ticks++;
  }
 return sts;
 }
 
 
-uint8_t RF_TX_BASIC_ACK(uint8_t *tbuf, uint8_t tlen, uint8_t rx_addr, uint8_t retry){
+uint8_t RF_TX_BASIC_ACK(uint8_t *tbuf, uint8_t tlen, uint8_t rx_addr, uint16_t retry){
 rf.tpid++;
 if(rf.tpid>7){rf.tpid=0;}
-uint8_t sts=0,rty=0,temp_len=0,temp_pid=(rf.tpid<<5),rbuf[32],ack=0;
+uint8_t  sts=0,temp_len=0,temp_pid=(rf.tpid<<5),rbuf[32],ack=0;
+uint16_t rty=0;
 
 while(rty<retry)
  {
     RF_TX_BASIC(tbuf,tlen|temp_pid,RF_ACK_REQ,rx_addr);
-    if(RF_RX_BASIC(rbuf,&temp_len,&ack,(RF_ACK_WAIT_MS*10),0))
+    if(RF_RX_BASIC(rbuf,&temp_len,&ack,RF_ACK_TMOUT_RX,0))
      {
         if((rbuf[RX_ADDR_BYTE_POS]==RF_OWN_ADDR)&&(rf.tpid==(rbuf[LEN_BYTE_POS]>>5)))
 		 {
@@ -257,7 +263,7 @@ if(RF_RX_BASIC(rbuf,&temp_len,&ack,1,0))
         if(ack==RF_ACK_REQ)
 		 {
 		    _delay_us(500);
-            temp_pid=(rbuf[LEN_BYTE_POS] & 0xE0)>>5;
+            temp_pid=(rbuf[LEN_BYTE_POS]>>5);
 	        RF_TX_BASIC(tbuf,tlen|(temp_pid<<5),RF_NO_ACK_REQ,rbuf[OWN_ADDR_BYTE_POS]);
 		    *rlen=temp_len;
 	        if(temp_pid!=rf.rpid){sts=1;}
@@ -269,9 +275,9 @@ if(RF_RX_BASIC(rbuf,&temp_len,&ack,1,0))
 return sts;
 }
 
-uint8_t RF_TX(uint8_t *tbuf, uint8_t tlen, uint8_t rx_addr,uint8_t ack_req, uint8_t retry){
+uint8_t RF_TX(uint8_t *tbuf, uint8_t tlen, uint8_t rx_addr,uint8_t ack_req, uint16_t retry){
 uint8_t sts=0;
 if(ack_req==RF_ACK_REQ)        { sts=RF_TX_BASIC_ACK(tbuf,tlen, rx_addr, retry);}
-else if(ack_req==RF_NO_ACK_REQ){ RF_TX_BASIC(tbuf,tlen,RF_NO_ACK_REQ,rx_addr);}
+else if(ack_req==RF_NO_ACK_REQ){ for(uint16_t i=0;i<retry;i++){RF_TX_BASIC(tbuf,tlen,RF_NO_ACK_REQ,rx_addr);}}
 return sts;
 }
