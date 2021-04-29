@@ -11,7 +11,7 @@
 
 int main(void){
 
-CLKPR = 0x80;CLKPR = 0x01;//internal 8mhz RC
+CLKPR = 0x80;CLKPR = 0x01;// prescaler 2
 
 RF_START(2); //channel 
 
@@ -52,7 +52,7 @@ for(uint8_t i=0;i<len;i++){
 
 int main(void){
 
-CLKPR = 0x80;CLKPR = 0x01;//internal 8mhz RC
+CLKPR = 0x80;CLKPR = 0x01;//prescaler 2
 
 UART_START();
 RF_START(2); //channel
