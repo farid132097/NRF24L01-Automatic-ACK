@@ -8,8 +8,8 @@
 NRF SCK  -> ATmega328P PB5 (Hardware SPI pin, can't be changed)
 NRF MISO -> ATmega328P PB4 (Hardware SPI pin, can't be changed)
 NRF MOSI -> ATmega328P PB3 (Hardware SPI pin, can't be changed)
-NRF CSN  -> ATmega328P PD6 (Configureable, see below definitions)
-NRF CE   -> ATmega328P PD5 (Configureable, see below definitions)
+NRF CSN  -> ATmega328P PC1 (Configureable, see below definitions)
+NRF CE   -> ATmega328P PC0 (Configureable, see below definitions)
 
 
 
@@ -49,15 +49,20 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define  RF_CSN_DDR        DDRD   /* Change CSN Data direction if necessary */
-#define  RF_CSN_PORT       PORTD  /* Change CSN port if necessary */
-#define  RF_CSN            6      /* Change CSN pin number if necessary */
+#define  RF_CSN_DDR        DDRC   /* Change CSN Data direction if necessary */
+#define  RF_CSN_PORT       PORTC  /* Change CSN port if necessary */
+#define  RF_CSN            1      /* Change CSN pin number if necessary */
 
-#define  RF_CE_DDR         DDRD   /* Change CE Data direction if necessary */
-#define  RF_CE_PORT        PORTD  /* Change CE port if necessary */
-#define  RF_CE             5      /* Change CE pin number if necessary */
+#define  RF_CE_DDR         DDRC   /* Change CE Data direction if necessary */
+#define  RF_CE_PORT        PORTC  /* Change CE port if necessary */
+#define  RF_CE             0      /* Change CE pin number if necessary */
 
 
+
+
+
+
+/*====================================================================================*/
 #define  RF_SCK_DDR        DDRB   /* Do not change */
 #define  RF_SCK_PORT       PORTB  /* Do not change */
 #define  RF_SCK            5      /* Do not change */
@@ -113,6 +118,8 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 			               RF_SCK_PORT&=~(1<<RF_SCK);RF_MISO_PORT&=~(1<<RF_MISO);\
 			               RF_MOSI_PORT&=~(1<<RF_MOSI);MCU_SS_PORT&=~(1<<MCU_SS);\
                            RF_CSN_PORT&=~(1<<RF_CSN);RF_CE_PORT&=~(1<<RF_CE);\
+/*====================================================================================*/
+
 
 typedef struct{
 uint8_t tpid;
@@ -138,6 +145,13 @@ for(uint8_t i=0;i<8;i++){
   }
 return crc;
 }
+
+uint16_t CRC_CHECK(uint8_t *buf, uint8_t len){
+uint16_t crc=0;
+for(uint8_t i=0;i<len;i++){crc=CRC16(crc,buf[i]);}
+return crc;
+}
+
 
 void RF_RW_REG(uint8_t reg, uint8_t rw, uint8_t *data, uint8_t len){
 RF_CSN_LOW();
@@ -195,7 +209,7 @@ for(uint8_t i=0;i<temp_len;i++){temp[i]=buf[i];}
 temp[OWN_ADDR_BYTE_POS]=RF_OWN_ADDR;
 temp[RX_ADDR_BYTE_POS]=rx_addr;temp[LEN_BYTE_POS]=len;
 temp[ACK_REQ_BYTE_POS]=ack;
-for(uint8_t i=0;i<30;i++){crc=CRC16(crc,temp[i]);}
+crc=CRC_CHECK(temp,30);
 temp[CRC_MSBYTE_POS]=(crc>>8);
 temp[CRC_LSBYTE_POS]=crc;
 RF_RW_REG(0xA0,RF_REG_WRITE,temp,32);
@@ -219,7 +233,7 @@ RF_RW_REG(0x17,RF_REG_READ,temp,1);
 if(!(temp[0] & 0x01))
     {
        RF_RW_REG(0x61,RF_REG_READ,buf,32);
-       for(uint8_t i=0;i<30;i++){crc=CRC16(crc,buf[i]);}
+	   crc=CRC_CHECK(buf,30);
 	   uint16_t calc_crc=buf[CRC_MSBYTE_POS];
 	   calc_crc=calc_crc<<8;
 	   calc_crc|=buf[CRC_LSBYTE_POS];
@@ -254,9 +268,9 @@ while(rty<retry)
 return sts;
 }
 
-uint8_t RF_RX(uint8_t *rbuf, uint8_t *rlen){
+uint8_t RF_RX(uint8_t *rbuf, uint8_t *rlen, uint16_t tmout){
 uint8_t sts=0,temp_len=0,temp_pid=0,tbuf[32],tlen=0,ack=0;
-if(RF_RX_BASIC(rbuf,&temp_len,&ack,1,0))
+if(RF_RX_BASIC(rbuf,&temp_len,&ack,tmout,0))
  {
     if((rbuf[RX_ADDR_BYTE_POS]==RF_OWN_ADDR)||(rbuf[RX_ADDR_BYTE_POS]==RF_GENERAL_CALL))
 	 {
