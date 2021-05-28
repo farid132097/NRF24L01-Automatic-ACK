@@ -95,7 +95,7 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 #define  LEN_BYTE_POS      29     /* Do not change */
 #define  RX_ADDR_BYTE_POS  28     /* Do not change */
 #define  OWN_ADDR_BYTE_POS 27     /* Do not change */
-#define  ACK_REQ_BYTE_POS  26     /* Do not change */
+#define  CONFIG_BYTE_POS   26     /* Do not change */
 
 
 
@@ -201,14 +201,14 @@ RF_PWR(RF_MODE_RX);
 
 
 
-uint8_t RF_TX_BASIC(uint8_t *buf, uint8_t len, uint8_t ack, uint8_t rx_addr){
+uint8_t RF_TX_BASIC(uint8_t *buf, uint8_t len, uint8_t config, uint8_t rx_addr){
 RF_PWR(RF_MODE_TX);
 uint8_t  temp[32],temp_len=(len & 0x1F); uint16_t crc=0;
 RF_RW_REG(0xE1,RF_REG_WRITE,temp,0);
 for(uint8_t i=0;i<temp_len;i++){temp[i]=buf[i];}
 temp[OWN_ADDR_BYTE_POS]=RF_OWN_ADDR;
 temp[RX_ADDR_BYTE_POS]=rx_addr;temp[LEN_BYTE_POS]=len;
-temp[ACK_REQ_BYTE_POS]=ack;
+temp[CONFIG_BYTE_POS]=config;
 crc=CRC_CHECK(temp,30);
 temp[CRC_MSBYTE_POS]=(crc>>8);
 temp[CRC_LSBYTE_POS]=crc;
@@ -221,7 +221,7 @@ return crc;
 }
 
 
-uint8_t RF_RX_BASIC(uint8_t *buf, uint8_t *len, uint8_t *ack, uint16_t timeout, uint8_t flush){
+uint8_t RF_RX_BASIC(uint8_t *buf, uint8_t *len, uint8_t *config, uint16_t timeout, uint8_t flush){
 RF_PWR(RF_MODE_RX);
 uint8_t dummy[2];
 if(flush){RF_RW_REG(0xE2,RF_REG_WRITE,dummy,0);}
@@ -237,7 +237,7 @@ if(!(temp[0] & 0x01))
 	   uint16_t calc_crc=buf[CRC_MSBYTE_POS];
 	   calc_crc=calc_crc<<8;
 	   calc_crc|=buf[CRC_LSBYTE_POS];
-       if(crc==calc_crc){*len=(buf[LEN_BYTE_POS] & 0x1F);*ack=buf[ACK_REQ_BYTE_POS];sts=1;break;}
+       if(crc==calc_crc){*len=(buf[LEN_BYTE_POS] & 0x1F);*config=buf[CONFIG_BYTE_POS];sts=1;break;}
     }
   _delay_us(RF_REG_CHECK_US);
   ticks++;
