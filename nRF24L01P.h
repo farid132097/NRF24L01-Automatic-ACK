@@ -249,13 +249,13 @@ return sts;
 uint8_t RF_TX_BASIC_ACK(uint8_t *tbuf, uint8_t tlen, uint8_t rx_addr, uint16_t retry){
 rf.tpid++;
 if(rf.tpid>7){rf.tpid=0;}
-uint8_t  sts=0,temp_len=0,temp_pid=(rf.tpid<<5),rbuf[32],ack=0;
+uint8_t  sts=0,temp_len=0,temp_pid=(rf.tpid<<5),rbuf[32],config=0;
 uint16_t rty=0;
 
 while(rty<retry)
  {
     RF_TX_BASIC(tbuf,tlen|temp_pid,RF_ACK_REQ,rx_addr);
-    if(RF_RX_BASIC(rbuf,&temp_len,&ack,RF_ACK_TMOUT_RX,0))
+    if(RF_RX_BASIC(rbuf,&temp_len,&config,RF_ACK_TMOUT_RX,0))
      {
         if((rbuf[RX_ADDR_BYTE_POS]==RF_OWN_ADDR)&&(rf.tpid==(rbuf[LEN_BYTE_POS]>>5)))
 		 {
@@ -269,12 +269,12 @@ return sts;
 }
 
 uint8_t RF_RX(uint8_t *rbuf, uint8_t *rlen, uint16_t tmout){
-uint8_t sts=0,temp_len=0,temp_pid=0,tbuf[32],tlen=0,ack=0;
-if(RF_RX_BASIC(rbuf,&temp_len,&ack,tmout,0))
+uint8_t sts=0,temp_len=0,temp_pid=0,tbuf[32],tlen=0,config=0;
+if(RF_RX_BASIC(rbuf,&temp_len,&config,tmout,0))
  {
     if((rbuf[RX_ADDR_BYTE_POS]==RF_OWN_ADDR)||(rbuf[RX_ADDR_BYTE_POS]==RF_GENERAL_CALL))
 	 {
-        if(ack==RF_ACK_REQ)
+        if((config & 0x01)==RF_ACK_REQ)
 		 {
 		    _delay_us(500);
             temp_pid=(rbuf[LEN_BYTE_POS]>>5);
