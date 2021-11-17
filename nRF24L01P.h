@@ -51,87 +51,110 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define  RF_CSN_DDR        DDRC   /* Change CSN Data direction if necessary */
-#define  RF_CSN_PORT       PORTC  /* Change CSN port if necessary */
-#define  RF_CSN            1      /* Change CSN pin number if necessary */
 
-#define  RF_CE_DDR         DDRC   /* Change CE Data direction if necessary */
-#define  RF_CE_PORT        PORTC  /* Change CE port if necessary */
-#define  RF_CE             0      /* Change CE pin number if necessary */
+/*=======================Pin Definitions (Configerable)=================================*/
 
+#define  __RF_CSN_DDR          DDRC   
+#define  __RF_CSN_PORT         PORTC  
+#define  __RF_CSN              1      
 
-
-
-
-
-/*====================================================================================*/
-#define  RF_SCK_DDR        DDRB   /* Do not change */
-#define  RF_SCK_PORT       PORTB  /* Do not change */
-#define  RF_SCK            5      /* Do not change */
-
-#define  RF_MISO_DDR       DDRB   /* Do not change */
-#define  RF_MISO_PORT      PORTB  /* Do not change */
-#define  RF_MISO           4      /* Do not change */
-
-#define  RF_MOSI_DDR       DDRB   /* Do not change */
-#define  RF_MOSI_PORT      PORTB  /* Do not change */
-#define  RF_MOSI           3      /* Do not change */
-
-#define  MCU_SS_DDR        DDRB   /* Do not change */
-#define  MCU_SS_PORT       PORTB  /* Do not change */
-#define  MCU_SS            2      /* Do not change */
-
-#define  RF_GENERAL_CALL   0x00   /* Do not change */
-#define  RF_ACK_WAIT_MS    10     /* Do not change */
-#define  RF_ACK_MULTI_FACT 7      /* Do not change */
-#define  RF_REG_CHECK_US   100    /* Do not change */
-#define  RF_REG_READ       0x01   /* Do not change */
-#define  RF_REG_WRITE      0x00   /* Do not change */
-#define  RF_MODE_PWR_DOWN  0x02   /* Do not change */
-#define  RF_MODE_RX        0x01   /* Do not change */
-#define  RF_MODE_TX        0x00   /* Do not change */
-#define  RF_ACK_REQ        0x01   /* Do not change */
-#define  RF_NO_ACK_REQ     0x00   /* Do not change */
-#define  CRC_LSBYTE_POS    31     /* Do not change */
-#define  CRC_MSBYTE_POS    30     /* Do not change */
-#define  LEN_BYTE_POS      29     /* Do not change */
-#define  RX_ADDR_BYTE_POS  28     /* Do not change */
-#define  OWN_ADDR_BYTE_POS 27     /* Do not change */
-#define  CONFIG_BYTE_POS   26     /* Do not change */
+#define  __RF_CE_DDR           DDRC  
+#define  __RF_CE_PORT          PORTC 
+#define  __RF_CE               0
 
 
 
-#define  RF_ACK_TMOUT_RX   RF_ACK_WAIT_MS*RF_ACK_MULTI_FACT
-#define  RF_CSN_LOW()      RF_CSN_PORT&=~(1<<RF_CSN)
-#define  RF_CSN_HIGH()     RF_CSN_PORT|=(1<<RF_CSN)
-#define  RF_CE_LOW()       RF_CE_PORT&=~(1<<RF_CE)
-#define  RF_CE_HIGH()      RF_CE_PORT|=(1<<RF_CE)
-
-#define  RF_Enable()       RF_SCK_DDR|=(1<<RF_SCK);RF_MISO_DDR&=~(1<<RF_MISO);\
-                           RF_MOSI_DDR|=(1<<RF_MOSI);MCU_SS_DDR|=(1<<MCU_SS);\
-                           RF_CSN_DDR|=(1<<RF_CSN);RF_CE_DDR|=(1<<RF_CE);\
-			               RF_CSN_PORT|=(1<<RF_CSN);RF_CE_PORT&=~(1<<RF_CE);\
-			               SPCR=(1<<SPE)|(1<<MSTR);SPSR=(1<<SPI2X);
-
-#define  RF_Disable()      SPCR=0x00;RF_SCK_DDR|=(1<<RF_SCK);\
-                           RF_MISO_DDR|=(1<<RF_MISO);RF_MOSI_DDR|=(1<<RF_MOSI);\
-			               MCU_SS_DDR|=(1<<MCU_SS);RF_CSN_DDR|=(1<<RF_CSN);\
-			               RF_CE_DDR|=(1<<RF_CE);\
-			               RF_SCK_PORT&=~(1<<RF_SCK);RF_MISO_PORT&=~(1<<RF_MISO);\
-			               RF_MOSI_PORT&=~(1<<RF_MOSI);MCU_SS_PORT&=~(1<<MCU_SS);\
-                           RF_CSN_PORT&=~(1<<RF_CSN);RF_CE_PORT&=~(1<<RF_CE);\
-/*====================================================================================*/
 
 
+
+/*====================Pin Definitions (Can't be changed)=================================*/
+#define  __RF_SCK_DDR          DDRB   
+#define  __RF_SCK_PORT         PORTB 
+#define  __RF_SCK              5      
+
+#define  __RF_MISO_DDR         DDRB   
+#define  __RF_MISO_PORT        PORTB 
+#define  __RF_MISO             4     
+
+#define  __RF_MOSI_DDR         DDRB   
+#define  __RF_MOSI_PORT        PORTB  
+#define  __RF_MOSI             3      
+
+#define  __MCU_SS_DDR          DDRB  
+#define  __MCU_SS_PORT         PORTB  
+#define  __MCU_SS              2     
+
+
+/*====================Don't Change Anything to the Below Section=================================*/
+#define  __RF_GENERAL_CALL        0x00   
+#define  __RF_ACK_WAIT_MS         5    
+#define  __RF_ACK_MULTI_FACT      7      
+#define  __RF_REG_CHECK_US        100   
+
+#define  __RF_REG_READ            0x01  
+#define  __RF_REG_WRITE           0x00  
+
+#define  __RF_MODE_PWR_DOWN       0x02 
+#define  __RF_MODE_RX             0x01  
+#define  __RF_MODE_TX             0x00  
+
+#define  __CRC_LSBYTE_POS         31   
+#define  __CRC_MSBYTE_POS         30     
+#define  __LEN_BYTE_POS           29    
+#define  __RX_ADDR_BYTE_POS       28    
+#define  __OWN_ADDR_BYTE_POS      27     
+#define  __CONFIG_BYTE_POS        26    
+
+#define  __CONFIG_ACK_bp          0    /*Config ACK Bit Position*/
+#define  __CONFIG_DATA_TYPE_gp    1    /*Config Data Type Group Position, 3 Bit, Starts from 1*/
+#define  __CONFIG_DATA_TYPE_GD    0x01 /*Config Data Type->General Data*/
+#define  __CONFIG_DATA_TYPE_SD    0x02 /*Config Data Type->Sync Data*/
+#define  __CONFIG_DATA_TYPE_AD    0x03 /*Config Data Type->ACK Data*/
+#define  __CONFIG_DATA_TYPE_BD    0x07 /*Config Data Type->Boot Data*/
+
+#define  __CONFIG_ACK_bm          (1<<__CONFIG_ACK_bp)
+#define  __CONFIG_DATA_TYPE_gm    (0x07<<__CONFIG_DATA_TYPE_gp)  /*3 Bit data type space*/
+#define  __CONFIG_DATA_TYPE_GD_gv (__CONFIG_DATA_TYPE_GD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->General Data group value*/
+#define  __CONFIG_DATA_TYPE_SD_gv (__CONFIG_DATA_TYPE_SD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Sync Data group value*/
+#define  __CONFIG_DATA_TYPE_AD_gv (__CONFIG_DATA_TYPE_AD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->ACK Data group value*/
+#define  __CONFIG_DATA_TYPE_BD_gv (__CONFIG_DATA_TYPE_BD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Boot Data group value*/
+
+#define  __RF_ACK_TMOUT_RX         __RF_ACK_WAIT_MS*__RF_ACK_MULTI_FACT
+#define  __RF_CSN_LOW()            __RF_CSN_PORT&=~(1<<__RF_CSN)
+#define  __RF_CSN_HIGH()           __RF_CSN_PORT|=(1<<__RF_CSN)
+#define  __RF_CE_LOW()             __RF_CE_PORT&=~(1<<__RF_CE)
+#define  __RF_CE_HIGH()            __RF_CE_PORT|=(1<<__RF_CE)
+
+
+/*====================Don't Change Anything to the Below Section=================================*/
+#define  __RF_Enable()            __RF_SCK_DDR|=(1<<__RF_SCK);     __RF_MISO_DDR&=~(1<<__RF_MISO);\
+                                  __RF_MOSI_DDR|=(1<<__RF_MOSI);   __MCU_SS_DDR|=(1<<__MCU_SS);\
+                                  __RF_CSN_DDR|=(1<<__RF_CSN);     __RF_CE_DDR|=(1<<__RF_CE);\
+			                      __RF_CSN_PORT|=(1<<__RF_CSN);    __RF_CE_PORT&=~(1<<__RF_CE);\
+			                        SPCR=(1<<SPE)|(1<<MSTR);         SPSR=(1<<SPI2X);
+
+/*====================Don't Change Anything to the Below Section=================================*/
+#define  __RF_Disable()            SPCR=0x00;                     __RF_SCK_DDR|=(1<<__RF_SCK);\
+                                 __RF_MISO_DDR|=(1<<__RF_MISO);   __RF_MOSI_DDR|=(1<<__RF_MOSI);\
+			                     __MCU_SS_DDR|=(1<<__MCU_SS);     __RF_CSN_DDR|=(1<<__RF_CSN);\
+			                     __RF_CE_DDR|=(1<<__RF_CE);\
+			                     __RF_SCK_PORT&=~(1<<__RF_SCK);   __RF_MISO_PORT&=~(1<<__RF_MISO);\
+			                     __RF_MOSI_PORT&=~(1<<__RF_MOSI); __MCU_SS_PORT&=~(1<<__MCU_SS);\
+                                 __RF_CSN_PORT&=~(1<<__RF_CSN);   __RF_CE_PORT&=~(1<<__RF_CE);\
+
+
+
+
+/*====================Not Recommended for user to use=================================*/
 typedef struct{
-uint8_t tpid;
-uint8_t rpid;
+uint8_t __tpid;
+uint8_t __rpid;
 }rf_params;
+rf_params __RF;
 
-rf_params rf;
 
-
-uint8_t SPI_TRX(uint8_t data){
+/*====================Not Recommended for user to use=================================*/
+uint8_t __SPI_TRX(uint8_t data){
 SPDR = data;
 uint16_t ticks=0;
 while(!(SPSR & (1 << SPIF))){_delay_us(1);ticks++;if(ticks>5000){break;}}
@@ -139,7 +162,8 @@ return SPDR;
 }
 
 
-uint16_t CRC16(uint16_t crc, uint8_t data){
+/*====================Not Recommended for user to use=================================*/
+uint16_t __CRC16(uint16_t crc, uint8_t data){
 crc=crc^((uint16_t)data<<8);
 for(uint8_t i=0;i<8;i++){
   if(crc & 0x8000){crc=(crc<<1)^0x1021;}
@@ -148,42 +172,53 @@ for(uint8_t i=0;i<8;i++){
 return crc;
 }
 
-uint16_t CRC_CHECK(uint8_t *buf, uint8_t len){
+
+/*====================Not Recommended for user to use=================================*/
+uint16_t __CRC_CHECK(uint8_t *buf, uint8_t len){
 uint16_t crc=0;
-for(uint8_t i=0;i<len;i++){crc=CRC16(crc,buf[i]);}
+for(uint8_t i=0;i<len;i++){crc=__CRC16(crc,buf[i]);}
 return crc;
 }
 
 
-void RF_RW_REG(uint8_t reg, uint8_t rw, uint8_t *data, uint8_t len){
-RF_CSN_LOW();
-if(rw==0){ reg|=0x20; SPI_TRX(reg);for(uint8_t i=0;i<len;i++){SPI_TRX(data[i]);}}
-else     { SPI_TRX(reg);for(uint8_t i=0;i<len;i++){data[i]=SPI_TRX(0xFF);}}
-RF_CSN_HIGH();
+/*====================Not Recommended for user to use=================================*/
+void __RF_RW_REG(uint8_t reg, uint8_t rw, uint8_t *data, uint8_t len){
+__RF_CSN_LOW();
+if(rw==0){ reg|=0x20; __SPI_TRX(reg);for(uint8_t i=0;i<len;i++){__SPI_TRX(data[i]);}}
+else     { __SPI_TRX(reg);for(uint8_t i=0;i<len;i++){data[i]=__SPI_TRX(0xFF);}}
+__RF_CSN_HIGH();
 }
 
-void RF_PWR(uint8_t state){
+
+/*====================Not Recommended for user to use=================================*/
+void __RF_PWR(uint8_t state){
 uint8_t buf[2];
-if     (state==RF_MODE_PWR_DOWN){buf[0]=0x00;}
-else if(state==RF_MODE_RX){buf[0]=0x73;RF_CE_HIGH();}
-else if(state==RF_MODE_TX){buf[0]=0x72;RF_CE_LOW();}
-RF_RW_REG(0x00,RF_REG_WRITE,buf,1);
+if     (state==__RF_MODE_PWR_DOWN){buf[0]=0x00;}
+else if(state==__RF_MODE_RX){buf[0]=0x73;__RF_CE_HIGH();}
+else if(state==__RF_MODE_TX){buf[0]=0x72;__RF_CE_LOW();}
+__RF_RW_REG(0x00,__RF_REG_WRITE,buf,1);
 }
 
-void RF_SLEEP(void){
-RF_PWR(RF_MODE_PWR_DOWN);
-RF_Disable();
+
+
+void RF_PWR_SLEEP(void){
+__RF_PWR(__RF_MODE_PWR_DOWN);
+__RF_Disable();
 }
 
-void RF_WAKE_UP(void){
-RF_Enable();
-RF_PWR(RF_MODE_RX);
+
+
+void RF_PWR_WAKE_UP(void){
+__RF_Enable();
+__RF_PWR(__RF_MODE_RX);
 }
+
+
 
 void RF_START(uint8_t channel){
-rf.tpid=0;
-rf.rpid=0;
-RF_Enable();
+__RF.__tpid=0;
+__RF.__rpid=0;
+__RF_Enable();
 uint8_t rf_config[20]={0x00,0x00,0x03,0x01,0x00,channel,0x26,0x70,0x20,0x20,
                        0x00,0x00,0x00,0x00,0x00,0x00,'A','A',0xE1,0xE2};
 uint8_t index=0,bytes=1,buf[5];
@@ -195,105 +230,110 @@ for(uint8_t addr=0;addr<=0xE2;addr++){
   else if(addr==0x0B){addr=0x10;bytes=5;}
   else if(addr==0x11){addr=0xE1;bytes=0;}
   buf[0]=rf_config[index];
-  RF_RW_REG(addr,RF_REG_WRITE,buf,bytes);
+  __RF_RW_REG(addr,__RF_REG_WRITE,buf,bytes);
   index++;
  }
-RF_PWR(RF_MODE_RX);
+__RF_PWR(__RF_MODE_RX);
 }
 
 
 
 uint8_t RF_TX_BASIC(uint8_t *buf, uint8_t len, uint8_t config, uint8_t rx_addr){
-RF_PWR(RF_MODE_TX);
+__RF_PWR(__RF_MODE_TX);
 uint8_t  temp[32],temp_len=(len & 0x1F); uint16_t crc=0;
-RF_RW_REG(0xE1,RF_REG_WRITE,temp,0);
+__RF_RW_REG(0xE1,__RF_REG_WRITE,temp,0);
 for(uint8_t i=0;i<temp_len;i++){temp[i]=buf[i];}
-temp[OWN_ADDR_BYTE_POS]=RF_OWN_ADDR;
-temp[RX_ADDR_BYTE_POS]=rx_addr;temp[LEN_BYTE_POS]=len;
-temp[CONFIG_BYTE_POS]=config;
-crc=CRC_CHECK(temp,30);
-temp[CRC_MSBYTE_POS]=(crc>>8);
-temp[CRC_LSBYTE_POS]=crc;
-RF_RW_REG(0xA0,RF_REG_WRITE,temp,32);
-RF_CE_HIGH();
+temp[__OWN_ADDR_BYTE_POS]=RF_OWN_ADDR;
+temp[__RX_ADDR_BYTE_POS]=rx_addr;temp[__LEN_BYTE_POS]=len;
+temp[__CONFIG_BYTE_POS]=config;
+crc=__CRC_CHECK(temp,30);
+temp[__CRC_MSBYTE_POS]=(crc>>8);
+temp[__CRC_LSBYTE_POS]=crc;
+__RF_RW_REG(0xA0,__RF_REG_WRITE,temp,32);
+__RF_CE_HIGH();
 temp[0]=0;
-while(!(temp[0]&(1<<4))){RF_RW_REG(0x17,RF_REG_READ,temp,1);_delay_us(RF_REG_CHECK_US);}
-RF_CE_LOW();
+while(!(temp[0]&(1<<4))){__RF_RW_REG(0x17,__RF_REG_READ,temp,1);_delay_us(__RF_REG_CHECK_US);}
+__RF_CE_LOW();
 return crc;
 }
 
 
+
 uint8_t RF_RX_BASIC(uint8_t *buf, uint8_t *len, uint8_t *config, uint16_t timeout, uint8_t flush){
-RF_PWR(RF_MODE_RX);
+__RF_PWR(__RF_MODE_RX);
 uint8_t dummy[2];
-if(flush){RF_RW_REG(0xE2,RF_REG_WRITE,dummy,0);}
+if(flush){__RF_RW_REG(0xE2,__RF_REG_WRITE,dummy,0);}
 uint16_t ticks=0,sts=0;
 
 while(ticks<timeout){
 sts=0; uint8_t temp[2]; uint16_t crc=0;
-RF_RW_REG(0x17,RF_REG_READ,temp,1);
+__RF_RW_REG(0x17,__RF_REG_READ,temp,1);
 if(!(temp[0] & 0x01))
     {
-       RF_RW_REG(0x61,RF_REG_READ,buf,32);
-	   crc=CRC_CHECK(buf,30);
-	   uint16_t calc_crc=buf[CRC_MSBYTE_POS];
+       __RF_RW_REG(0x61,__RF_REG_READ,buf,32);
+	   crc=__CRC_CHECK(buf,30);
+	   uint16_t calc_crc=buf[__CRC_MSBYTE_POS];
 	   calc_crc=calc_crc<<8;
-	   calc_crc|=buf[CRC_LSBYTE_POS];
-       if(crc==calc_crc){*len=(buf[LEN_BYTE_POS] & 0x1F);*config=buf[CONFIG_BYTE_POS];sts=1;break;}
+	   calc_crc|=buf[__CRC_LSBYTE_POS];
+       if(crc==calc_crc){*len=(buf[__LEN_BYTE_POS] & 0x1F);*config=buf[__CONFIG_BYTE_POS];sts=1;break;}
     }
-  _delay_us(RF_REG_CHECK_US);
+  _delay_us(__RF_REG_CHECK_US);
   ticks++;
  }
 return sts;
 }
 
 
-uint8_t RF_TX_BASIC_ACK(uint8_t *tbuf, uint8_t tlen, uint8_t rx_addr, uint16_t retry){
-rf.tpid++;
-if(rf.tpid>7){rf.tpid=0;}
-uint8_t  sts=0,temp_len=0,temp_pid=(rf.tpid<<5),rbuf[32],config=0;
+
+uint8_t RF_TX(uint8_t *tbuf, uint8_t tlen, uint8_t config, uint8_t rx_addr, uint16_t retry){
+__RF.__tpid++;
+if(__RF.__tpid>7){__RF.__tpid=0;}
+uint8_t  sts=0,temp_len=0,temp_pid=(__RF.__tpid<<5),rbuf[32];
 uint16_t rty=0;
 
-while(rty<retry)
+if(__CONFIG_ACK_bm&config)
  {
-    RF_TX_BASIC(tbuf,tlen|temp_pid,RF_ACK_REQ,rx_addr);
-    if(RF_RX_BASIC(rbuf,&temp_len,&config,RF_ACK_TMOUT_RX,0))
-     {
-        if((rbuf[RX_ADDR_BYTE_POS]==RF_OWN_ADDR)&&(rf.tpid==(rbuf[LEN_BYTE_POS]>>5)))
-		 {
-	        sts=1;
-	        break;
-	     }
-     }
-    else{rty++;}
-  }
+  while(rty<retry)
+   {
+      RF_TX_BASIC(tbuf,tlen|temp_pid,config,rx_addr);
+      if(RF_RX_BASIC(rbuf,&temp_len,&config,__RF_ACK_TMOUT_RX,0))
+       {
+          if((rbuf[__RX_ADDR_BYTE_POS]==RF_OWN_ADDR)&&(__RF.__tpid==(rbuf[__LEN_BYTE_POS]>>5))&&((config&__CONFIG_DATA_TYPE_gm)==__CONFIG_DATA_TYPE_AD_gv))
+		   {
+	          sts=1;
+	          break;
+	       } 
+       }
+      else{rty++;}
+    }
+ }
+else
+ {
+  RF_TX_BASIC(tbuf,tlen|temp_pid,config,rx_addr);
+ }
 return sts;
 }
 
+
+
 uint8_t RF_RX(uint8_t *rbuf, uint8_t *rlen, uint16_t tmout){
-uint8_t sts=0,temp_len=0,temp_pid=0,tbuf[32],tlen=0,config=0;
+uint8_t sts=0,temp_len=0,temp_pid=0,tbuf[32],tlen=2,config=0;
 if(RF_RX_BASIC(rbuf,&temp_len,&config,tmout,0))
  {
-    if((rbuf[RX_ADDR_BYTE_POS]==RF_OWN_ADDR)||(rbuf[RX_ADDR_BYTE_POS]==RF_GENERAL_CALL))
+    if((rbuf[__RX_ADDR_BYTE_POS]==RF_OWN_ADDR)||(rbuf[__RX_ADDR_BYTE_POS]==__RF_GENERAL_CALL))
 	 {
-        if((config & 0x01)==RF_ACK_REQ)
+        if((config & __CONFIG_ACK_bm)==__CONFIG_ACK_bm)
 		 {
 		    _delay_us(500);
-            temp_pid=(rbuf[LEN_BYTE_POS]>>5);
-	        RF_TX_BASIC(tbuf,tlen|(temp_pid<<5),RF_NO_ACK_REQ,rbuf[OWN_ADDR_BYTE_POS]);
+            temp_pid=(rbuf[__LEN_BYTE_POS]>>5);
+	        RF_TX_BASIC(tbuf,tlen|(temp_pid<<5),__CONFIG_DATA_TYPE_AD_gv,rbuf[__OWN_ADDR_BYTE_POS]);
 		    *rlen=temp_len;
-	        if(temp_pid!=rf.rpid){sts=1;}
-	        rf.rpid=temp_pid;
+	        if(temp_pid!=__RF.__rpid){sts=(config&__CONFIG_DATA_TYPE_gm)>>1;}
+	        __RF.__rpid=temp_pid;
 		  }
-		else if(ack==RF_NO_ACK_REQ){*rlen=temp_len; sts=1;}
+		else {*rlen=temp_len; sts=(config&__CONFIG_DATA_TYPE_gm)>>1;}
 	 }
  }
 return sts;
 }
 
-uint8_t RF_TX(uint8_t *tbuf, uint8_t tlen, uint8_t rx_addr,uint8_t ack_req, uint16_t retry){
-uint8_t sts=0;
-if(ack_req==RF_ACK_REQ)        { sts=RF_TX_BASIC_ACK(tbuf,tlen, rx_addr, retry);}
-else if(ack_req==RF_NO_ACK_REQ){ for(uint16_t i=0;i<retry;i++){RF_TX_BASIC(tbuf,tlen,RF_NO_ACK_REQ,rx_addr);}}
-return sts;
-}
