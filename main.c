@@ -1,71 +1,35 @@
 
 
+
+
 //Transmitter sample code
-#define  RF_OWN_ADDR  0x11  //TX address
+#define  RF_OWN_ADDR  0x11 
 #include <avr/io.h>
 #include <util/delay.h>
 #include "nRF24L01P.h"
 
-
 int main(void){
 
-CLKPR = 0x80;CLKPR = 0x01;// prescaler 2
+CLKPR = 0x80;CLKPR = 0x00;
 
-RF_START(2); //channel 
+RF_START(2);
 
-uint8_t len=1;
 while(1){
-           
-	       uint8_t buf[32]="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-           RF_TX(buf, len, 0x12, RF_ACK_REQ, 10);  //sending to 0x12, ACK required, 10 retries
-		   //RF_TX(buf, len, 0x12, RF_NO_ACK_REQ, 10);  //sending to 0x12, ACK not required, 10 retries
-           _delay_ms(500);
-		   len++;
-		   if(len>26){len=1;}
+	
+		   uint8_t arry[26]="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		   if(RF_TX(arry,cnt,__CONFIG_DATA_TYPE_GD_gv|__CONFIG_ACK_bm,0x12,5)){
+		     PORTD&=~(1<<2);
+		     _delay_ms(5);
+		     PORTD|=(1<<2);
+		   }
+		   cnt++;
+		   if(cnt>20){cnt=1;}
+		   
+		   _delay_ms(1000);
 		   
         }
 }
 
 
 
-/*
-//Reciver sample code
-#define  RF_OWN_ADDR  0x12  //RX address
-#include <avr/io.h>
-#include <util/delay.h>
-#include "nRF24L01P.h"
 
-
-#define  BAUD              19200
-#define  UBRR_VAL          F_CPU/16/BAUD-1
-#define  UART_START()      UBRR0H=0;UBRR0L=UBRR_VAL;UCSR0B=0x18;UCSR0C=6;
-
-void UART_TX(uint8_t *data, uint8_t len){
-for(uint8_t i=0;i<len;i++){
-  while(!(UCSR0A & (1<<UDRE0)));
-  UDR0=data[i];
-  while(!(UCSR0A & (1<<TXC0)));
-  }
-}
-
-int main(void){
-
-CLKPR = 0x80;CLKPR = 0x01;//prescaler 2
-
-UART_START();
-RF_START(2); //channel
-
-while(1){
-           
-	      
-	     
-	       uint8_t rx_buf[32],rx_len=0;
-	       if(RF_RX(rx_buf, &rx_len))      //automatically handles if ack is requested
-		    {
-			   UART_TX(rx_buf,rx_len);     //transmit via uart
-			   UART_TX((uint8_t *)"\n",1); //set line ending if necessary
-			}
-	       _delay_ms(1);
-		   
-        }
-}*/
