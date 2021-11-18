@@ -54,70 +54,68 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 
 /*=======================Pin Definitions (Configerable)=================================*/
 
-#define  __RF_CSN_DDR          DDRC   
-#define  __RF_CSN_PORT         PORTC  
-#define  __RF_CSN              1      
+#define  __RF_CSN_DDR              DDRC   
+#define  __RF_CSN_PORT             PORTC  
+#define  __RF_CSN                  1      
 
-#define  __RF_CE_DDR           DDRC  
-#define  __RF_CE_PORT          PORTC 
-#define  __RF_CE               0
-
-
-
-
+#define  __RF_CE_DDR               DDRC  
+#define  __RF_CE_PORT              PORTC 
+#define  __RF_CE                   0
 
 
 /*====================Pin Definitions (Can't be changed)=================================*/
-#define  __RF_SCK_DDR          DDRB   
-#define  __RF_SCK_PORT         PORTB 
-#define  __RF_SCK              5      
+#define  __RF_SCK_DDR              DDRB   
+#define  __RF_SCK_PORT             PORTB 
+#define  __RF_SCK                  5      
 
-#define  __RF_MISO_DDR         DDRB   
-#define  __RF_MISO_PORT        PORTB 
-#define  __RF_MISO             4     
+#define  __RF_MISO_DDR             DDRB   
+#define  __RF_MISO_PORT            PORTB 
+#define  __RF_MISO                 4     
 
-#define  __RF_MOSI_DDR         DDRB   
-#define  __RF_MOSI_PORT        PORTB  
-#define  __RF_MOSI             3      
+#define  __RF_MOSI_DDR             DDRB   
+#define  __RF_MOSI_PORT            PORTB  
+#define  __RF_MOSI                 3      
 
-#define  __MCU_SS_DDR          DDRB  
-#define  __MCU_SS_PORT         PORTB  
-#define  __MCU_SS              2     
+#define  __MCU_SS_DDR              DDRB  
+#define  __MCU_SS_PORT             PORTB  
+#define  __MCU_SS                  2     
 
 
 /*====================Don't Change Anything to the Below Section=================================*/
-#define  __RF_GENERAL_CALL        0x00   
-#define  __RF_ACK_WAIT_MS         5    
-#define  __RF_ACK_MULTI_FACT      7      
-#define  __RF_REG_CHECK_US        100   
+#define  __RF_GENERAL_CALL         0x00   
+#define  __RF_ACK_WAIT_MS          10    
+#define  __RF_ACK_MULTI_FACT       7      
+#define  __RF_REG_CHECK_US         100   
 
-#define  __RF_REG_READ            0x01  
-#define  __RF_REG_WRITE           0x00  
+#define  __RF_REG_READ             0x01  
+#define  __RF_REG_WRITE            0x00  
 
-#define  __RF_MODE_PWR_DOWN       0x02 
-#define  __RF_MODE_RX             0x01  
-#define  __RF_MODE_TX             0x00  
+#define  __RF_MODE_PWR_DOWN        0x02 
+#define  __RF_MODE_RX              0x01  
+#define  __RF_MODE_TX              0x00  
 
-#define  __CRC_LSBYTE_POS         31   
-#define  __CRC_MSBYTE_POS         30     
-#define  __LEN_BYTE_POS           29    
-#define  __RX_ADDR_BYTE_POS       28    
-#define  __OWN_ADDR_BYTE_POS      27     
-#define  __CONFIG_BYTE_POS        26    
+#define  __CRC_LSBYTE_POS          31   
+#define  __CRC_MSBYTE_POS          30     
+#define  __LEN_BYTE_POS            29    
+#define  __RX_ADDR_BYTE_POS        28    
+#define  __OWN_ADDR_BYTE_POS       27     
+#define  __CONFIG_BYTE_POS         26    
 
-#define  __CONFIG_ACK_bp          0    /*Config ACK Bit Position*/
-#define  __CONFIG_DATA_TYPE_gp    1    /*Config Data Type Group Position, 3 Bit, Starts from 1*/
-#define  __CONFIG_DATA_TYPE_GD    0x01 /*Config Data Type->General Data*/
-#define  __CONFIG_DATA_TYPE_SD    0x02 /*Config Data Type->Sync Data*/
-#define  __CONFIG_DATA_TYPE_AD    0x03 /*Config Data Type->ACK Data*/
-#define  __CONFIG_DATA_TYPE_BD    0x07 /*Config Data Type->Boot Data*/
+#define  __CONFIG_ACK_bp           0    /*Config ACK Bit Position*/
+#define  __CONFIG_DATA_TYPE_gp     1    /*Config Data Type Group Position, 3 Bit, Starts from 1*/
+#define  __CONFIG_DATA_TYPE_UGD    0x01 /*Config Data Type->Unacknowledged General Data*/
+#define  __CONFIG_DATA_TYPE_AGD    0x02 /*Config Data Type->Acknowledged General Data*/
+#define  __CONFIG_DATA_TYPE_ASD    0x03 /*Config Data Type->Acknowledged Sync Data*/
+#define  __CONFIG_DATA_TYPE_AAD    0x04 /*Config Data Type->Acknowledged ACK Data*/
+#define  __CONFIG_DATA_TYPE_ABD    0x07 /*Config Data Type->Acknowledged Boot Data*/
 
-#define  __CONFIG_ACK_bm          (1<<__CONFIG_ACK_bp)
-#define  __CONFIG_DATA_TYPE_gm    (0x07<<__CONFIG_DATA_TYPE_gp)  /*3 Bit data type space*/
-#define  __CONFIG_DATA_TYPE_GD_gv (__CONFIG_DATA_TYPE_GD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->General Data group value*/
-#define  __CONFIG_DATA_TYPE_SD_gv (__CONFIG_DATA_TYPE_SD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Sync Data group value*/
-#define  __CONFIG_DATA_TYPE_AD_gv (__CONFIG_DATA_TYPE_AD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->ACK Data group value*/
-#define  __CONFIG_DATA_TYPE_BD_gv (__CONFIG_DATA_TYPE_BD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Boot Data group value*/
+#define  __CONFIG_ACK_bm           (1<<__CONFIG_ACK_bp)
+#define  __CONFIG_DATA_TYPE_gm     (0x07<<__CONFIG_DATA_TYPE_gp)  /*3 Bit data type space*/
+#define  __CONFIG_DATA_TYPE_UGD_gv (__CONFIG_DATA_TYPE_UGD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Unacknowledged General Data group value*/
+#define  __CONFIG_DATA_TYPE_AGD_gv (__CONFIG_DATA_TYPE_AGD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Acknowledged General Data group value*/
+#define  __CONFIG_DATA_TYPE_ASD_gv (__CONFIG_DATA_TYPE_ASD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Acknowledged Sync Data group value*/
+#define  __CONFIG_DATA_TYPE_AAD_gv (__CONFIG_DATA_TYPE_AAD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Acknowledged ACK Data group value*/
+#define  __CONFIG_DATA_TYPE_ABD_gv (__CONFIG_DATA_TYPE_ABD<<__CONFIG_DATA_TYPE_gp) /*Config Data Type->Acknowledged Boot Data group value*/
 
 #define  __RF_ACK_TMOUT_RX         __RF_ACK_WAIT_MS*__RF_ACK_MULTI_FACT
 #define  __RF_CSN_LOW()            __RF_CSN_PORT&=~(1<<__RF_CSN)
@@ -127,20 +125,20 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 
 
 /*====================Don't Change Anything to the Below Section=================================*/
-#define  __RF_Enable()            __RF_SCK_DDR|=(1<<__RF_SCK);     __RF_MISO_DDR&=~(1<<__RF_MISO);\
-                                  __RF_MOSI_DDR|=(1<<__RF_MOSI);   __MCU_SS_DDR|=(1<<__MCU_SS);\
-                                  __RF_CSN_DDR|=(1<<__RF_CSN);     __RF_CE_DDR|=(1<<__RF_CE);\
-			                      __RF_CSN_PORT|=(1<<__RF_CSN);    __RF_CE_PORT&=~(1<<__RF_CE);\
-			                        SPCR=(1<<SPE)|(1<<MSTR);         SPSR=(1<<SPI2X);
+#define  __RF_Enable()             __RF_SCK_DDR|=(1<<__RF_SCK);     __RF_MISO_DDR&=~(1<<__RF_MISO);\
+                                   __RF_MOSI_DDR|=(1<<__RF_MOSI);   __MCU_SS_DDR|=(1<<__MCU_SS);\
+                                   __RF_CSN_DDR|=(1<<__RF_CSN);     __RF_CE_DDR|=(1<<__RF_CE);\
+			                       __RF_CSN_PORT|=(1<<__RF_CSN);    __RF_CE_PORT&=~(1<<__RF_CE);\
+			                         SPCR=(1<<SPE)|(1<<MSTR);         SPSR=(1<<SPI2X);
 
 /*====================Don't Change Anything to the Below Section=================================*/
-#define  __RF_Disable()            SPCR=0x00;                     __RF_SCK_DDR|=(1<<__RF_SCK);\
-                                 __RF_MISO_DDR|=(1<<__RF_MISO);   __RF_MOSI_DDR|=(1<<__RF_MOSI);\
-			                     __MCU_SS_DDR|=(1<<__MCU_SS);     __RF_CSN_DDR|=(1<<__RF_CSN);\
-			                     __RF_CE_DDR|=(1<<__RF_CE);\
-			                     __RF_SCK_PORT&=~(1<<__RF_SCK);   __RF_MISO_PORT&=~(1<<__RF_MISO);\
-			                     __RF_MOSI_PORT&=~(1<<__RF_MOSI); __MCU_SS_PORT&=~(1<<__MCU_SS);\
-                                 __RF_CSN_PORT&=~(1<<__RF_CSN);   __RF_CE_PORT&=~(1<<__RF_CE);\
+#define  __RF_Disable()              SPCR=0x00;                     __RF_SCK_DDR|=(1<<__RF_SCK);\
+                                   __RF_MISO_DDR|=(1<<__RF_MISO);   __RF_MOSI_DDR|=(1<<__RF_MOSI);\
+			                       __MCU_SS_DDR|=(1<<__MCU_SS);     __RF_CSN_DDR|=(1<<__RF_CSN);\
+			                       __RF_CE_DDR|=(1<<__RF_CE);\
+			                       __RF_SCK_PORT&=~(1<<__RF_SCK);   __RF_MISO_PORT&=~(1<<__RF_MISO);\
+			                       __RF_MOSI_PORT&=~(1<<__RF_MOSI); __MCU_SS_PORT&=~(1<<__MCU_SS);\
+                                   __RF_CSN_PORT&=~(1<<__RF_CSN);   __RF_CE_PORT&=~(1<<__RF_CE);\
 
 
 
@@ -149,6 +147,7 @@ uint8_t      tx_retry             max retries when no acknowledgement received (
 typedef struct{
 uint8_t __tpid;
 uint8_t __rpid;
+uint8_t __mode;
 }rf_params;
 rf_params __RF;
 
@@ -202,7 +201,7 @@ __RF_RW_REG(0x00,__RF_REG_WRITE,buf,1);
 
 
 void RF_PWR_SLEEP(void){
-__RF_PWR(__RF_MODE_PWR_DOWN);
+if(__RF.__mode!=__RF_MODE_PWR_DOWN){__RF_PWR(__RF_MODE_PWR_DOWN);}
 __RF_Disable();
 }
 
@@ -210,7 +209,7 @@ __RF_Disable();
 
 void RF_PWR_WAKE_UP(void){
 __RF_Enable();
-__RF_PWR(__RF_MODE_RX);
+if((__RF.__mode!=__RF_MODE_RX)||(__RF.__mode!=__RF_MODE_TX)){__RF_PWR(__RF_MODE_RX);}
 }
 
 
@@ -218,6 +217,7 @@ __RF_PWR(__RF_MODE_RX);
 void RF_START(uint8_t channel){
 __RF.__tpid=0;
 __RF.__rpid=0;
+__RF.__mode=__RF_MODE_RX;
 __RF_Enable();
 uint8_t rf_config[20]={0x00,0x00,0x03,0x01,0x00,channel,0x26,0x70,0x20,0x20,
                        0x00,0x00,0x00,0x00,0x00,0x00,'A','A',0xE1,0xE2};
@@ -239,7 +239,7 @@ __RF_PWR(__RF_MODE_RX);
 
 
 uint8_t RF_TX_BASIC(uint8_t *buf, uint8_t len, uint8_t config, uint8_t rx_addr){
-__RF_PWR(__RF_MODE_TX);
+if(__RF.__mode!=__RF_MODE_TX){__RF_PWR(__RF_MODE_TX);__RF.__mode=__RF_MODE_TX;}
 uint8_t  temp[32],temp_len=(len & 0x1F); uint16_t crc=0;
 __RF_RW_REG(0xE1,__RF_REG_WRITE,temp,0);
 for(uint8_t i=0;i<temp_len;i++){temp[i]=buf[i];}
@@ -260,7 +260,7 @@ return crc;
 
 
 uint8_t RF_RX_BASIC(uint8_t *buf, uint8_t *len, uint8_t *config, uint16_t timeout, uint8_t flush){
-__RF_PWR(__RF_MODE_RX);
+if(__RF.__mode!=__RF_MODE_RX){__RF_PWR(__RF_MODE_RX);__RF.__mode=__RF_MODE_RX;}
 uint8_t dummy[2];
 if(flush){__RF_RW_REG(0xE2,__RF_REG_WRITE,dummy,0);}
 uint16_t ticks=0,sts=0;
@@ -298,7 +298,7 @@ if(__CONFIG_ACK_bm&config)
       RF_TX_BASIC(tbuf,tlen|temp_pid,config,rx_addr);
       if(RF_RX_BASIC(rbuf,&temp_len,&config,__RF_ACK_TMOUT_RX,0))
        {
-          if((rbuf[__RX_ADDR_BYTE_POS]==RF_OWN_ADDR)&&(__RF.__tpid==(rbuf[__LEN_BYTE_POS]>>5))&&((config&__CONFIG_DATA_TYPE_gm)==__CONFIG_DATA_TYPE_AD_gv))
+          if((rbuf[__RX_ADDR_BYTE_POS]==RF_OWN_ADDR)&&(__RF.__tpid==(rbuf[__LEN_BYTE_POS]>>5))&&((config&__CONFIG_DATA_TYPE_gm)==__CONFIG_DATA_TYPE_AAD_gv))
 		   {
 	          sts=1;
 	          break;
@@ -326,12 +326,12 @@ if(RF_RX_BASIC(rbuf,&temp_len,&config,tmout,0))
 		 {
 		    _delay_us(500);
             temp_pid=(rbuf[__LEN_BYTE_POS]>>5);
-	        RF_TX_BASIC(tbuf,tlen|(temp_pid<<5),__CONFIG_DATA_TYPE_AD_gv,rbuf[__OWN_ADDR_BYTE_POS]);
+	        RF_TX_BASIC(tbuf,tlen|(temp_pid<<5),__CONFIG_DATA_TYPE_AAD_gv,rbuf[__OWN_ADDR_BYTE_POS]);
 		    *rlen=temp_len;
 	        if(temp_pid!=__RF.__rpid){sts=(config&__CONFIG_DATA_TYPE_gm)>>1;}
 	        __RF.__rpid=temp_pid;
 		  }
-		else {*rlen=temp_len; sts=(config&__CONFIG_DATA_TYPE_gm)>>1;}
+		else {*rlen=temp_len; sts=1;}
 	 }
  }
 return sts;
